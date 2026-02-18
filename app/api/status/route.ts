@@ -5,7 +5,7 @@ import { GoogleGenerativeAI } from "@google/generative-ai";
 export async function GET() {
   try {
     // DB check
-    await prisma.review.findFirst();
+    // await prisma.review.findFirst();
 
     // LLM key check
     if (!process.env.GEMINI_API_KEY) {
