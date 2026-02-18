@@ -19,7 +19,8 @@ export async function GET() {
       database: "OK",
       llm: "OK",
     });
-  } catch {
+  } catch (err) {
+    console.error("Status LLM error:", err);
     return NextResponse.json(
       { backend: "OK", database: "OK", llm: "Failed" },
       { status: 500 }
