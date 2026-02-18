@@ -20,6 +20,7 @@ export default function UrlForm({ setReview }: any) {
     });
     if (!res.ok) {
       alert("Analysis failed");
+      setLoading(false);
       return;
     }
     const data = await res.json();
