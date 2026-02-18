@@ -12,7 +12,8 @@ export async function GET() {
       model: "gemini-2.5-flash",
     });
 
-    await model.generateContent("Say OK");
+    const res = await model.generateContent("Say OK");
+    console.log("res", res);
     return NextResponse.json({
       backend: "OK",
       database: "OK",
