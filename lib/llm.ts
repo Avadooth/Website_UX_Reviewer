@@ -8,20 +8,44 @@ export async function analyzeUX(content: any) {
   });
 
   const prompt = `
-You are a senior UX auditor.
+You are a senior UX auditor evaluating a live website.
 
-Return valid JSON only.
+Your task:
+Analyze the structured website content and generate a professional UX audit.
 
-Return:
-- score (0-100)
-- issues (array 8-12)
+Strict Requirements:
+- Return valid JSON only.
+- Do NOT wrap output in markdown.
+- Do NOT include explanations outside JSON.
+- Do NOT hallucinate content that is not present in the provided data.
+- Evidence must reference exact extracted text.
 
-Each issue must include:
-  - category (clarity, layout, navigation, accessibility, trust)
-  - title
-  - why
-  - evidence
-  - suggestion
+Return JSON in this exact structure:
+
+{
+  "score": number (0-100),
+  "issues": [
+    {
+      "priority": number (1-10, where 10 = most critical),
+      "category": "clarity | layout | navigation | accessibility | trust",
+      "title": "short issue title",
+      "why": "concise explanation (2-3 sentences max)",
+      "evidence": "exact text snippet from provided data",
+      "suggestion": "clear actionable improvement",
+      "before": "current problematic version (only for top 3 priority issues)",
+      "after": "improved version suggestion (only for top 3 priority issues)"
+    }
+  ]
+}
+
+Rules:
+- Generate 8 to 12 issues.
+- Ensure issues are grouped across multiple categories.
+- Top 3 highest priority issues MUST include before and after.
+- Lower priority issues must NOT include before/after.
+- Keep explanations concise and practical.
+- Avoid generic UX advice.
+- Focus on real usability impact.
 
 Website Data:
 ${JSON.stringify(content)}
@@ -30,10 +54,11 @@ ${JSON.stringify(content)}
   const result = await model.generateContent(prompt);
   const text = result.response.text();
 
-  const cleaned = text
-    .replace(/```json/g, "")
-    .replace(/```/g, "")
-    .trim();
+  const jsonMatch = text.match(/\{[\s\S]*\}/);
 
-  return JSON.parse(cleaned);
+  if (!jsonMatch) {
+    throw new Error("Invalid JSON from Gemini");
+  }
+
+  return JSON.parse(jsonMatch[0]);
 }

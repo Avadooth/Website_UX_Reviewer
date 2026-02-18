@@ -7,13 +7,21 @@ export default function UrlForm({ setReview }: any) {
   const submit = async () => {
     if (!url) return alert("Enter URL");
 
+    if (!url.startsWith("http")) {
+      alert("Please enter valid URL including https://");
+      return;
+    }
+
     setLoading(true);
 
     const res = await fetch("/api/review", {
       method: "POST",
       body: JSON.stringify({ url }),
     });
-
+    if (!res.ok) {
+      alert("Analysis failed");
+      return;
+    }
     const data = await res.json();
     setReview(data.result);
     setLoading(false);
@@ -27,10 +35,7 @@ export default function UrlForm({ setReview }: any) {
         value={url}
         onChange={(e) => setUrl(e.target.value)}
       />
-      <button
-        onClick={submit}
-        className="bg-black text-white px-4 rounded"
-      >
+      <button onClick={submit} className="bg-black text-white px-4 rounded">
         {loading ? "Analyzing..." : "Analyze"}
       </button>
     </div>
