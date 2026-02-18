@@ -15,6 +15,7 @@ export async function POST(req: NextRequest) {
     const html = await fetchWebsite(url);
     const structured = parseContent(html);
     const analysis = await analyzeUX(structured);
+    console.log("analysis", analysis);
 
     const saved = await prisma.review.create({
       data: {
